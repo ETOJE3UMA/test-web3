@@ -94,6 +94,7 @@ export default {
     width: 100%;
     border: 1px solid #807DC0;
     border-bottom: 0;
+    border-radius: 4px;
     cursor: pointer;
     transition: .4s;
     &:first-child {

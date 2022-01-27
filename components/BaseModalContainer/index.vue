@@ -15,11 +15,13 @@ import modals from '@/store/modals/modals';
 
 import BaseModalStatus from '@/components/Modals/BaseModalStatus';
 import BaseModalDefault from '@/components/Modals/BaseModalDefault';
+import BaseModalTransfer from '@/components/Modals/BaseModalTransfer';
 
 export default {
   components: {
     'base-modal-status': BaseModalStatus,
     'base-modal-default': BaseModalDefault,
+    'base-modal-transfer': BaseModalTransfer,
   },
   data: () => ({
     modals,

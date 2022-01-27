@@ -30,12 +30,12 @@
         >
           History
         </nuxt-link>
-        <nuxt-link
+        <button
           class="navbar__nav"
-          to="/transfer"
+          @click="showTransferModal"
         >
           Transfer
-        </nuxt-link>
+        </button>
         <nuxt-link
           class="navbar__nav"
           to="/accounts"
@@ -70,6 +70,11 @@ export default {
     ...mapActions({
       priceUSD: 'web3/getUsdPrice',
     }),
+    showTransferModal() {
+      this.ShowModal({
+        key: 'base-modal-transfer',
+      });
+    },
   },
 };
 </script>
