@@ -22,6 +22,7 @@ export default {
     { src: '@plugins/main.js' },
     { src: '@plugins/vee-validate.js' },
     { src: '@plugins/injectComponents.js' },
+    { src: '~/mixins/global.js' },
   ],
   components: true,
   buildModules: [
@@ -65,6 +66,6 @@ export default {
     },
   },
   env: {
-
+    COINGECKO: process.env.COINGECKO,
   },
 };
