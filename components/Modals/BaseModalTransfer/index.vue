@@ -12,14 +12,15 @@
       />
       <div class="transfer__buttons">
         <base-btn
-          :mode="'border-green'"
+          :mode="'transparrent'"
           class="transfer__button"
           @click="close"
         >
           Cancel
         </base-btn>
         <base-btn
-          :disabled="sendStatus"
+          :mode="'blue'"
+          :disabled="!recipient"
           class="transfer__button"
           @click="handleSubmit(addTicket)"
         >
@@ -49,6 +50,14 @@ export default {
 .transfer {
   padding: 20px;
   border-radius: 4px;
+  &__buttons {
+    display: flex;
+    justify-content: space-around;
+    column-gap: 20px;
+  }
+  // &__button {
+  //   margin: 0 10px;
+  // }
 }
 .base-modal {
   @include modalKit;

@@ -50,6 +50,8 @@ export default {
       const { mode, disabled } = this;
       return [
         { 'base-btn_disabled': mode === 'disabled' || disabled },
+        { 'base-btn_transparrent': mode === 'transparrent' },
+        { 'base-btn_blue': mode === 'blue' },
       ];
     },
   },
@@ -63,17 +65,21 @@ export default {
   align-items: center;
   justify-content: center;
   height: 56px;
-  // width: 100%;
   font-weight: 500;
-  // font-size: 14px;
-  color: #4C4AA1;
-  background: transparent;
-  // &:hover {
-  //   color: #FFFFFF;
-  //   background: #b34165;
-  // }
-  // &_disabled {
-  //   pointer-events: none;
-  // }
+  width: 100%;
+  &_transparrent {
+    color: #4C4AA1;
+    background: transparent;
+    border: 1px solid #4C4AA1;
+    border-radius: 4px;
+    padding: 5px 0;
+  }
+  &_blue {
+    color: #FFF;
+    background: #3B38D0;
+    border: 1px solid #4C4AA1;
+    border-radius: 4px;
+    padding: 5px 0;
+  }
 }
 </style>
