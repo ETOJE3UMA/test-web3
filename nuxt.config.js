@@ -67,5 +67,10 @@ export default {
   },
   env: {
     COINGECKO: process.env.COINGECKO,
+    CFI_TOKEN: process.env.CFI_TOKEN,
+    VEE_TOKEN: process.env.VEE_TOKEN,
+    USDT_TOKEN: process.env.USDT_TOKEN,
+    DLD_TOKEN: process.env.DLD_TOKEN,
+    SCHZ_TOKEN: process.env.SCHZ_TOKEN,
   },
 };

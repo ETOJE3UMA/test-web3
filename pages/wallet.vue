@@ -8,6 +8,29 @@
         {{ getBalance }} ETH
       </div>
     </div>
+    <div class="wallet__assets">
+      <div
+        v-for="token in getTokens"
+        :key="`token-${token.token}`"
+        class="wallet__assets asset"
+      >
+        <div class="asset__icon">
+          <img
+            src="@/assets/image/icon-token.svg"
+            alt="icon"
+            class="icon"
+          >
+        </div>
+        <div class="asset__balance balance">
+          <div class="balance__native">
+            {{ token.result.balance }} {{ token.result.symbol }}
+          </div>
+          <div class="balance__usd">
+            ${{ getAssetBalance(token.result.balance).toFixed(2) }}
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -21,6 +44,7 @@ export default {
   computed: {
     ...mapGetters({
       getPrice: 'web3/getPriceInUsd',
+      getTokens: 'web3/getTokenData',
     }),
     getBalance() {
       return Number(getUserBalance()).toFixed(6);
@@ -36,6 +60,9 @@ export default {
     ...mapActions({
       priceUSD: 'web3/getUsdPrice',
     }),
+    getAssetBalance(asset) {
+      return asset * this.getPrice;
+    },
   },
 };
 </script>
@@ -56,6 +83,42 @@ export default {
     }
     &-eth {
       opacity: 0.8;
+    }
+  }
+  .asset {
+    margin: auto;
+    padding: 20px 0;
+    display: flex;
+    align-items: center;
+    max-width: 315px;
+    width: 100%;
+    border: 1px solid #807DC0;
+    border-bottom: 0;
+    cursor: pointer;
+    transition: .4s;
+    &:first-child {
+      border-top: 0;
+    }
+    &:last-child {
+      border-bottom: 1px solid #807DC0;
+    }
+    .icon {
+      margin: 0 20px;
+      width: 44px;
+      height: 44px;
+    }
+    &:hover {
+      background-color: #fff;
+    }
+  }
+  .balance {
+    &__native {
+      font-size: 25px;
+      font-weight: 500;
+      color: #373583;
+    }
+    &__usd {
+      color: #807DC0;
     }
   }
 }

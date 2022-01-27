@@ -24,6 +24,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .primary {
+  background-color: #F8F8F8;
   height: 100vh;
   overflow-y: auto;
   &__template {

@@ -5,4 +5,7 @@ export default {
   setPriceInUsd(state, payload) {
     state.priceInUsd = payload;
   },
+  setTokenData(state, payload) {
+    state.tokenData.push(payload);
+  },
 };

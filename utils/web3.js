@@ -49,5 +49,10 @@ export const connectWallet = async () => {
   }
 };
 
+export const shiftedBy = (value, decimals, mode = 0) => {
+  const decimalsInt = mode === 0 ? parseInt(decimals, 10) : -parseInt(decimals, 10);
+  return new BigNumber(+value).shiftedBy(+decimalsInt).toString();
+};
+
 export const getUserAddress = () => userAddress;
 export const getUserBalance = () => userBalance;
