@@ -97,7 +97,7 @@ import { getFee } from '~/utils/web3';
 
 export default {
   data: () => ({
-    amountETH: '',
+    amountETH: 0,
     token: {
       result: {
         symbol: '',
@@ -124,14 +124,24 @@ export default {
       if (this.getApproveFee) {
         return this.getTransferFee;
       }
-      return this.getApproveFee + this.getTransferFee;
+      return Number(this.getApproveFee) + Number(this.getTransferFee);
     },
   },
+  // watch: {
+  //   amountETH() {
+  //     this.fetchFee();
+  //   },
+  //   token() {
+  //     this.fetchFee();
+  //   },
+  // },
   async mounted() {
+    this.SetLoader(true);
     // eslint-disable-next-line prefer-destructuring
     this.token = await this.getTokens[0];
     await this.fetchAllowance();
-    await this.fetchFee();
+    this.fetchFee();
+    this.SetLoader(false);
   },
   methods: {
     ...mapActions({

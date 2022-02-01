@@ -49,35 +49,37 @@ export default {
   },
   async allowance({ getters, commit, dispatch }, spender) {
     const tokens = getters.getTokenData;
-    tokens.forEach(async (token) => {
+    await Promise.all(tokens.map(async (token) => {
       const response = await fetchContractData('allowance', ERC20, token.token, [getUserAddress(), spender]);
       commit('setAllowance', {
         token: token.token,
         allowance: response,
       });
-    });
+      console.log({
+        token: token.token,
+        allowance: response,
+      });
+    }));
   },
   async calcFee({
     getters, dispatch, commit, state,
   }, { token, spender, amount }) {
-    console.log('fee start');
-    console.log('token: ', token);
-    console.log({ ...state.allowanceData });
     const { allowance } = state.allowanceData.find((item) => item.token === token);
     console.log(allowance);
-    // const decimals = getters.getDecimalsByAddress(token);
-    // const convertAmount = new BigNumber(+amount).shiftedBy(+decimals).toString();
-    // if (amount > allowance) {
-    //   const approveFee = await getFee(
-    //     'approve', ERC20, token, [spender, convertAmount],
-    //   );
-    //   commit('setApproveFee', approveFee);
-    // }
-    // const transferFee = await getFee(
-    //   'transfer', ERC20, token, [spender, convertAmount],
-    // );
-    // commit('setTransferFee', transferFee);
-    console.log('fee end');
+    const decimals = getters.getDecimalsByAddress(token);
+    const convertAmount = new BigNumber(+amount).shiftedBy(+decimals).toString();
+    if (amount > allowance) {
+      const approveFee = await getFee(
+        'approve', ERC20, token, [spender, convertAmount],
+      );
+      const converApproveFee = shiftedBy(approveFee, decimals, 1);
+      commit('setApproveFee', converApproveFee);
+    }
+    const transferFee = await getFee(
+      'transfer', ERC20, token, [spender, convertAmount],
+    );
+    const converTransferFee = shiftedBy(transferFee, decimals, 1);
+    commit('setTransferFee', converTransferFee);
   },
   // async approve({ getters, commit }, { token, spender, amount }) {
   //   const decimals = getters.getDecimalsByAddress(token);

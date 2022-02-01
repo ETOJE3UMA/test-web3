@@ -47,12 +47,13 @@ export default {
     }),
   },
   mounted() {
+    this.SetLoader(true);
     this.priceUSD();
+    this.SetLoader(false);
   },
   methods: {
     ...mapActions({
       priceUSD: 'web3/getUsdPrice',
-      allowance: 'web3/allowance',
     }),
     getTokenBalance(token) {
       return token * this.getPrice;

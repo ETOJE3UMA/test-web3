@@ -3,6 +3,6 @@ export default () => ({
   priceInUsd: null,
   tokenData: [],
   allowanceData: [],
-  transferFee: null,
-  approveFee: null,
+  transferFee: '',
+  approveFee: '',
 });
