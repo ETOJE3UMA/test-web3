@@ -5,9 +5,6 @@
       <div class="template__content">
         <nuxt />
       </div>
-      <div class="template__footer">
-        Footer
-      </div>
     </div>
     <base-modal-container />
     <!-- <loader-screen /> -->

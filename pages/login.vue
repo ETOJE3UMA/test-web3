@@ -12,6 +12,7 @@
     </div>
     <base-btn
       class="main__btn"
+      mode="transparrent"
       @click="connectUserWallet"
     >
       Signing & Tokens Home

@@ -1,7 +1,19 @@
 import Vue from 'vue';
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
+import { getUserBalance } from '~/utils/web3';
 
 Vue.mixin({
+  computed: {
+    ...mapGetters({
+      getPrice: 'web3/getPriceInUsd',
+    }),
+    GetBalance() {
+      return Number(getUserBalance()).toFixed(6);
+    },
+    GetBalanceInUsd() {
+      return (this.GetBalance * this.getPrice).toFixed(2);
+    },
+  },
   methods: {
     ...mapActions({
       ShowModal: 'modals/show',
@@ -19,6 +31,9 @@ Vue.mixin({
         length - trimLength,
         length,
       )}`;
+    },
+    GetPriceInUsd(amount) {
+      return (amount * this.getPrice).toFixed(2);
     },
   },
 });

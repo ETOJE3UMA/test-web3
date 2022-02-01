@@ -20,9 +20,26 @@ export const fetchContractData = async (method, abi, address, params) => {
   }
 };
 
+// Send transactions from web3
+export const sendTransaction = async (method, abi, address, params) => {
+  try {
+    const Contract = new web3Wallet.eth.Contract(abi, address);
+    const data = Contract.methods[method].apply(null, params).encodeABI();
+    return web3Wallet.eth.sendTransaction({
+      to: address,
+      data,
+      from: userAddress,
+    });
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+};
+
+// Send transactions from web4
 export const createInst = async (abi, address) => {
-  const abs = web4.getContractAbstraction(abi);
-  return await abs.getInstance(address);
+  const abstracion = web4.getContractAbstraction(abi);
+  return await abstracion.getInstance(address);
 };
 
 export const connectWallet = async () => {
@@ -49,10 +66,22 @@ export const connectWallet = async () => {
   }
 };
 
+export const getFee = async (
+  method, abi, address, params,
+) => {
+  try {
+    return await web3Wallet.eth.getGasPrice();
+  } catch (e) {
+    console.log(e);
+    return '';
+  }
+};
+
 export const shiftedBy = (value, decimals, mode = 0) => {
   const decimalsInt = mode === 0 ? parseInt(decimals, 10) : -parseInt(decimals, 10);
   return new BigNumber(+value).shiftedBy(+decimalsInt).toString();
 };
 
+export const getWeb3 = () => web3Wallet;
 export const getUserAddress = () => userAddress;
 export const getUserBalance = () => userBalance;

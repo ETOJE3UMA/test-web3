@@ -81,5 +81,9 @@ export default {
     border-radius: 4px;
     padding: 5px 0;
   }
+  &_disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
 }
 </style>

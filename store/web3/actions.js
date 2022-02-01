@@ -1,6 +1,12 @@
 import axios from 'axios';
+import BigNumber from 'bignumber.js';
 import {
-  connectWallet, fetchContractData, getUserAddress, shiftedBy,
+  connectWallet,
+  fetchContractData,
+  sendTransaction,
+  getUserAddress,
+  shiftedBy,
+  getFee,
 } from '~/utils/web3';
 import { ERC20 } from '~/utils/abis';
 
@@ -41,4 +47,43 @@ export default {
       });
     });
   },
+  async allowance({ getters, commit, dispatch }, spender) {
+    const tokens = getters.getTokenData;
+    tokens.forEach(async (token) => {
+      const response = await fetchContractData('allowance', ERC20, token.token, [getUserAddress(), spender]);
+      commit('setAllowance', {
+        token: token.token,
+        allowance: response,
+      });
+    });
+  },
+  async calcFee({
+    getters, dispatch, commit, state,
+  }, { token, spender, amount }) {
+    console.log('fee start');
+    console.log('token: ', token);
+    console.log({ ...state.allowanceData });
+    const { allowance } = state.allowanceData.find((item) => item.token === token);
+    // const decimals = getters.getDecimalsByAddress(token);
+    // const convertAmount = new BigNumber(+amount).shiftedBy(+decimals).toString();
+    // if (amount > allowance) {
+    //   const approveFee = await getFee(
+    //     'approve', ERC20, token, [spender, convertAmount],
+    //   );
+    //   commit('setApproveFee', approveFee);
+    // }
+    // const transferFee = await getFee(
+    //   'transfer', ERC20, token, [spender, convertAmount],
+    // );
+    // commit('setTransferFee', transferFee);
+    console.log('fee end');
+  },
+  // async approve({ getters, commit }, { token, spender, amount }) {
+  //   const decimals = getters.getDecimalsByAddress(token);
+  //   const convertAmount = new BigNumber(+amount).shiftedBy(+decimals).toString();
+  //   const fee = await getFee(
+  //     'approve', ERC20, token, [spender, convertAmount],
+  //   );
+  //   await sendTransaction('approve', ERC20, token, [spender, convertAmount], { maxPriorityFeePerGas: fee, maxFeePerGas: fee });
+  // },
 };

@@ -9,12 +9,17 @@
       :vid="vid"
       :name="name"
     >
-      <label
-        v-if="label"
-        class="base-input__label"
-      >
-        {{ label }}
-      </label>
+      <div class="wrap">
+        <label
+          v-if="label"
+          class="base-input__label"
+        >
+          {{ label }}
+        </label>
+        <span class="base-input__option">
+          <slot name="option" />
+        </span>
+      </div>
       <div
         class="base-input__control"
       >
@@ -26,10 +31,6 @@
           :value="value"
           :type="type"
           class="base-input__input"
-          :class="{
-            'base-input__short': short,
-            'base-input__with-text': text
-          }"
           :placeholder="placeholder"
           :autocomplete="autocomplete"
           @keyup.enter="$emit('enter')"
@@ -140,6 +141,20 @@ export default {
 .base-input {
   position: relative;
   font-size: 18px;
+  width: 100%;
+  .wrap {
+    display: flex;
+    justify-content: space-between;
+  }
+  &__option {
+    color: #807DC0;
+    opacity: 0.7;
+    font-size: 15px;
+    cursor: pointer;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
   &__label {
     font-style: normal;
     font-weight: 500;
@@ -156,19 +171,21 @@ export default {
     background: #FFFFFF;
     box-sizing: border-box;
     border-radius: 4px;
+    border: 1px solid transparent;
     transition: 0.2s ease-in-out;
-    // &:hover {
-    //   border-color: #807DC0;
-    // }
-    // &:focus-within {
-    //   border-color:  #807DC0;
-    // }
+    &:hover {
+      border: 1px solid #3B38D0;
+    }
+    &:focus-within {
+      border-color:  #807DC0;
+    }
   }
   &__input {
     width: 100%;
     border: none;
     background: transparent;
     color: #373583;
+    font-weight: 500;
     &::placeholder {
       font-size: 18px;
       color: #807DC0;
@@ -189,8 +206,9 @@ export default {
     justify-content: center;
     align-items: center;
     height: 100%;
+    color: #807DC0;
+    white-space: nowrap;
     span {
-      width: 24px;
       &:before {
         font-size: 24px;
       }
@@ -207,16 +225,7 @@ export default {
   &_disabled {
     .base-input {
       &__control {
-        background: #F7F7F7;
-        border: 1px solid #E9EAE9;
         pointer-events: none;
-      }
-      &__slot::v-deep {
-        span {
-          &:before {
-            color: #A8ABA9;
-          }
-        }
       }
     }
   }

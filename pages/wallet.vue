@@ -2,10 +2,10 @@
   <div class="wallet">
     <div class="wallet__balance">
       <div class="wallet__balance-usd">
-        ${{ getBalanceInUsd.toFixed(2) }} USD
+        ${{ GetBalanceInUsd }} USD
       </div>
       <div class="wallet__balance-eth">
-        {{ getBalance }} ETH
+        {{ GetBalance }} ETH
       </div>
     </div>
     <div class="wallet__assets">
@@ -26,7 +26,7 @@
             {{ token.result.balance }} {{ token.result.symbol }}
           </div>
           <div class="balance__usd">
-            ${{ getAssetBalance(token.result.balance).toFixed(2) }}
+            ${{ getTokenBalance(token.result.balance).toFixed(2) }}
           </div>
         </div>
       </div>
@@ -36,7 +36,6 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import { getUserBalance } from '~/utils/web3';
 
 export default {
   middleware: 'auth',
@@ -46,12 +45,6 @@ export default {
       getPrice: 'web3/getPriceInUsd',
       getTokens: 'web3/getTokenData',
     }),
-    getBalance() {
-      return Number(getUserBalance()).toFixed(6);
-    },
-    getBalanceInUsd() {
-      return this.getBalance * this.getPrice;
-    },
   },
   mounted() {
     this.priceUSD();
@@ -59,9 +52,10 @@ export default {
   methods: {
     ...mapActions({
       priceUSD: 'web3/getUsdPrice',
+      allowance: 'web3/allowance',
     }),
-    getAssetBalance(asset) {
-      return asset * this.getPrice;
+    getTokenBalance(token) {
+      return token * this.getPrice;
     },
   },
 };
@@ -88,9 +82,11 @@ export default {
   .asset {
     margin: auto;
     padding: 20px 0;
-    display: flex;
+    display: grid;
+    grid-template-columns: max-content minmax(100px, 200px);
     align-items: center;
-    max-width: 315px;
+    justify-content: center;
+    margin: auto;
     width: 100%;
     border: 1px solid #807DC0;
     border-bottom: 0;
