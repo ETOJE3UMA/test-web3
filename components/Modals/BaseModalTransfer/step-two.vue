@@ -149,7 +149,7 @@ export default {
     async fetchFee() {
       try {
         const payload = {
-          token: this.getTokens[0],
+          token: this.getTokens[0].token,
           spender: this.options.address,
           amount: this.amountETH,
         };

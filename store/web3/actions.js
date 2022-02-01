@@ -64,6 +64,7 @@ export default {
     console.log('token: ', token);
     console.log({ ...state.allowanceData });
     const { allowance } = state.allowanceData.find((item) => item.token === token);
+    console.log(allowance);
     // const decimals = getters.getDecimalsByAddress(token);
     // const convertAmount = new BigNumber(+amount).shiftedBy(+decimals).toString();
     // if (amount > allowance) {
