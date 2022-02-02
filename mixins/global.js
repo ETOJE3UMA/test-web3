@@ -3,6 +3,7 @@ import { mapActions, mapGetters } from 'vuex';
 import { getUserBalance } from '~/utils/web3';
 
 Vue.mixin({
+  // TODO fix all usd price functions (work wrong now!)
   computed: {
     ...mapGetters({
       getPrice: 'web3/getPriceInUsd',

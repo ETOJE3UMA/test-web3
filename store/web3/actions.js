@@ -55,38 +55,43 @@ export default {
         token: token.token,
         allowance: response,
       });
-      console.log({
-        token: token.token,
-        allowance: response,
-      });
     }));
   },
   async calcFee({
     getters, dispatch, commit, state,
   }, { token, spender, amount }) {
     const { allowance } = state.allowanceData.find((item) => item.token === token);
-    console.log(allowance);
     const decimals = getters.getDecimalsByAddress(token);
     const convertAmount = new BigNumber(+amount).shiftedBy(+decimals).toString();
     if (amount > allowance) {
       const approveFee = await getFee(
         'approve', ERC20, token, [spender, convertAmount],
       );
-      const converApproveFee = shiftedBy(approveFee, decimals, 1);
+      const converApproveFee = Number(shiftedBy(approveFee, 10, 1)).toFixed(2);
       commit('setApproveFee', converApproveFee);
     }
     const transferFee = await getFee(
       'transfer', ERC20, token, [spender, convertAmount],
     );
-    const converTransferFee = shiftedBy(transferFee, decimals, 1);
+    const converTransferFee = Number(shiftedBy(transferFee, 10, 1)).toFixed(2);
     commit('setTransferFee', converTransferFee);
   },
-  // async approve({ getters, commit }, { token, spender, amount }) {
-  //   const decimals = getters.getDecimalsByAddress(token);
-  //   const convertAmount = new BigNumber(+amount).shiftedBy(+decimals).toString();
-  //   const fee = await getFee(
-  //     'approve', ERC20, token, [spender, convertAmount],
-  //   );
-  //   await sendTransaction('approve', ERC20, token, [spender, convertAmount], { maxPriorityFeePerGas: fee, maxFeePerGas: fee });
-  // },
+  async approve({ getters }, { token, spender, amount }) {
+    const decimals = getters.getDecimalsByAddress(token);
+    const convertAmount = new BigNumber(+amount).shiftedBy(+decimals).toString();
+    const fee = await getFee(
+      'approve', ERC20, token, [spender, convertAmount],
+    );
+    await sendTransaction('approve', ERC20, token, [spender, convertAmount], { maxPriorityFeePerGas: fee, maxFeePerGas: fee });
+  },
+  async transfer({ getters }, { token, recipient, amount }) {
+    try {
+      const fee = getters.getTransferFee;
+      const decimals = getters.getDecimalsByAddress(token);
+      const convertAmount = new BigNumber(+amount).shiftedBy(+decimals).toString();
+      await sendTransaction('transfer', ERC20, token, [recipient, convertAmount], { maxPriorityFeePerGas: fee, maxFeePerGas: fee });
+    } catch (e) {
+      console.log(e);
+    }
+  },
 };

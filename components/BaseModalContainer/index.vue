@@ -17,6 +17,7 @@ import BaseModalStatus from '@/components/Modals/BaseModalStatus';
 import BaseModalDefault from '@/components/Modals/BaseModalDefault';
 import BaseModalTransfer from '@/components/Modals/BaseModalTransfer';
 import BaseModalTransferStepTwo from '@/components/Modals/BaseModalTransfer/step-two.vue';
+import BaseModalTransferStepThree from '@/components/Modals/BaseModalTransfer/step-three.vue';
 
 export default {
   components: {
@@ -24,6 +25,7 @@ export default {
     'base-modal-default': BaseModalDefault,
     'base-modal-transfer': BaseModalTransfer,
     'base-modal-transfer-step-two': BaseModalTransferStepTwo,
+    'base-modal-transfer-step-three': BaseModalTransferStepThree,
   },
   data: () => ({
     modals,

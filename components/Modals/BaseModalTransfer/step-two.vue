@@ -67,7 +67,11 @@
           :label="'Transaction fee'"
           :placeholder="'Transaction fee'"
           :is-disabled="true"
-        />
+        >
+          <template slot="right">
+            USD
+          </template>
+        </base-input>
         <div class="transfer__buttons">
           <!-- TODO fix cancel -->
           <base-btn
@@ -124,17 +128,17 @@ export default {
       if (this.getApproveFee) {
         return this.getTransferFee;
       }
-      return Number(this.getApproveFee) + Number(this.getTransferFee);
+      return this.getApproveFee + this.getTransferFee;
     },
   },
-  // watch: {
-  //   amountETH() {
-  //     this.fetchFee();
-  //   },
-  //   token() {
-  //     this.fetchFee();
-  //   },
-  // },
+  watch: {
+    amountETH() {
+      this.fetchFee();
+    },
+    token() {
+      this.fetchFee();
+    },
+  },
   async mounted() {
     this.SetLoader(true);
     // eslint-disable-next-line prefer-destructuring
@@ -169,12 +173,14 @@ export default {
       }
     },
     async nextStep() {
-      const payload = {
-        token: this.token.token,
-        spender: this.options.address,
-        amount: this.amountETH,
-      };
-      await this.approve(payload);
+      this.ShowModal({
+        key: 'base-modal-transfer-step-three',
+        address: this.options.address,
+        amountUSD: this.amountUSD,
+        amountETH: this.amountETH,
+        fee: this.fee,
+        token: this.token,
+      });
     },
     previosStep() {
       this.ShowModal({
