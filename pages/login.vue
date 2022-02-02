@@ -38,7 +38,7 @@ export default {
     async connectUserWallet() {
       await this.connectWallet();
       if (this.isConnected) {
-        this.$router.push('/wallet');
+        this.$router.push('/');
       }
     },
   },
