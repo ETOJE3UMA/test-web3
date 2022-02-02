@@ -7,6 +7,7 @@ import {
   getUserAddress,
   shiftedBy,
   getFee,
+  fetchTransactionHistory,
 } from '~/utils/web3';
 import { ERC20 } from '~/utils/abis';
 
@@ -90,6 +91,17 @@ export default {
       const decimals = getters.getDecimalsByAddress(token);
       const convertAmount = new BigNumber(+amount).shiftedBy(+decimals).toString();
       await sendTransaction('transfer', ERC20, token, [recipient, convertAmount], { maxPriorityFeePerGas: fee, maxFeePerGas: fee });
+    } catch (e) {
+      console.log(e);
+    }
+  },
+  async transactionsHistory({ commit, getters }) {
+    try {
+      const tokens = getters.getTokenData;
+      await Promise.all(tokens.map(async (token) => {
+        const response = await fetchTransactionHistory(token.token, token.result.symbol, token.result.decimals);
+        commit('setTransactions', response);
+      }));
     } catch (e) {
       console.log(e);
     }

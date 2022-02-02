@@ -17,4 +17,7 @@ export default {
   setTransferFee(state, payload) {
     state.transferFee = payload;
   },
+  setTransactions(state, payload) {
+    state.transactions = payload;
+  },
 };

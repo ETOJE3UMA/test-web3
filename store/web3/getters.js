@@ -7,4 +7,5 @@ export default {
   getAllowanceByAddress: (state) => (payload) => state.allowanceData.find((item) => item.token === payload)?.allowance,
   getApproveFee: (state) => state.approveFee,
   getTransferFee: (state) => state.transferFee,
+  getTransactions: (state) => state.transactions,
 };

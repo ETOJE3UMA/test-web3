@@ -77,6 +77,36 @@ export const getFee = async (
   }
 };
 
+export const fetchTransactionHistory = async (token, symbol) => {
+  try {
+    const Contract = new web3Wallet.eth.Contract(ERC20, token);
+    const history = await Contract.getPastEvents('AllEvents', { fromBlock: 0, toBlock: 'latest' });
+    const filteredResult = history.filter((it) => !!it.event).map((item) => {
+      const owner = item.returnValues?.owner?.toLowerCase() || '';
+      const spender = item.returnValues?.spender?.toLowerCase() || '';
+      const from = item.returnValues?.from?.toLowerCase() || '';
+      const to = item.returnValues?.to?.toLowerCase() || '';
+      if (from.toLowerCase() === userAddress || to.toLowerCase() === userAddress
+        || owner.toLowerCase() === userAddress || spender.toLowerCase() === userAddress
+      ) {
+        return {
+          type: item.event,
+          from: item.returnValues.from || item.returnValues.owner,
+          to: item.returnValues.to || item.returnValues.spender,
+          amount: item.returnValues.value,
+          symbol,
+        };
+      }
+      return null;
+    }).filter((item) => item !== null);
+    console.log('requestTransactionHistory: ', filteredResult);
+    return filteredResult;
+  } catch (e) {
+    console.log('requestTransactionHistory: ', e);
+    return e;
+  }
+};
+
 export const shiftedBy = (value, decimals, mode = 0) => {
   const decimalsInt = mode === 0 ? parseInt(decimals, 10) : -parseInt(decimals, 10);
   return new BigNumber(+value).shiftedBy(+decimalsInt).toString();
