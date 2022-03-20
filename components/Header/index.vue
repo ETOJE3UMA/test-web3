@@ -20,7 +20,7 @@
       <div class="header__navbar navbar">
         <nuxt-link
           class="navbar__nav"
-          to="/wallet"
+          to="/"
         >
           Assets
         </nuxt-link>
@@ -53,23 +53,11 @@ import { getUserAddress, getUserBalance } from '~/utils/web3';
 
 export default {
   computed: {
-    ...mapGetters({
-      getPrice: 'web3/getPriceInUsd',
-    }),
     userInfo() {
       return { address: getUserAddress(), balance: Number(getUserBalance()).toFixed(6) };
     },
-    userBalanceInUsd() {
-      return this.userInfo.balance * this.getPrice;
-    },
-  },
-  mounted() {
-    this.priceUSD();
   },
   methods: {
-    ...mapActions({
-      priceUSD: 'web3/getUsdPrice',
-    }),
     showTransferModal() {
       this.ShowModal({
         key: 'base-modal-transfer',

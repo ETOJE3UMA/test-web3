@@ -1,18 +1,11 @@
 import Vue from 'vue';
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions } from 'vuex';
 import { getUserBalance } from '~/utils/web3';
 
 Vue.mixin({
-  // TODO fix all usd price functions (work wrong now!)
   computed: {
-    ...mapGetters({
-      getPrice: 'web3/getPriceInUsd',
-    }),
     GetBalance() {
       return Number(getUserBalance()).toFixed(6);
-    },
-    GetBalanceInUsd() {
-      return (this.GetBalance * this.getPrice).toFixed(2);
     },
   },
   methods: {
@@ -32,9 +25,6 @@ Vue.mixin({
         length - trimLength,
         length,
       )}`;
-    },
-    GetPriceInUsd(amount) {
-      return (amount * this.getPrice).toFixed(2);
     },
   },
 });

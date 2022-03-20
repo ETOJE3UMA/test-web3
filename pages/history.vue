@@ -3,8 +3,12 @@
     <div class="history__title">
       History of transactions
     </div>
-    <div class="history__list">
-      {{ getHistory }}
+    <div
+      v-for="history in getHistory"
+      :key="history.transactionHash"
+      class="history__list list"
+    >
+      {{ history }}
     </div>
   </div>
 </template>

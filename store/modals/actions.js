@@ -13,7 +13,7 @@ export default {
   setUnclosable({ commit }) {
     commit('setUnclosable');
   },
-  showToast(_, value) {
+  showToast({ commit }, value) {
     const codeText = value?.code ? $nuxt.$t(`toasts.errors.${value.code}`) : $nuxt.$t('toasts.errors.0');
     this._vm.$bvToast.toast(value?.text || codeText, {
       title: value.title || $nuxt.$t('toasts.title'),

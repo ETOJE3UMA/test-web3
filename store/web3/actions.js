@@ -6,28 +6,19 @@ import {
   sendTransaction,
   getUserAddress,
   shiftedBy,
-  getFee,
   fetchTransactionHistory,
 } from '~/utils/web3';
 import { ERC20 } from '~/utils/abis';
-
-const { COINGECKO } = process.env;
+import { error } from '~/utils/index';
 
 export default {
+
   async connectWallet({ commit, dispatch }) {
-    const response = await connectWallet();
-    if (!response.ok) {
-      console.log(response);
-      return;
-    }
+    await connectWallet();
     commit('setIsConnected', true);
     dispatch('getTokens');
   },
-  async getUsdPrice({ commit }) {
-    const response = await axios.get(`${COINGECKO}/simple/price?ids=ethereum&vs_currencies=usd`);
-    commit('setPriceInUsd', response.data.ethereum.usd);
-    return response.data.ethereum.usd;
-  },
+
   async getTokens({ commit }) {
     const tokens = [
       process.env.CFI_TOKEN,
@@ -48,7 +39,8 @@ export default {
       });
     });
   },
-  async allowance({ getters, commit, dispatch }, spender) {
+
+  async allowance({ getters, commit }, spender) {
     const tokens = getters.getTokenData;
     await Promise.all(tokens.map(async (token) => {
       const response = await fetchContractData('allowance', ERC20, token.token, [getUserAddress(), spender]);
@@ -58,43 +50,25 @@ export default {
       });
     }));
   },
-  async calcFee({
-    getters, dispatch, commit, state,
-  }, { token, spender, amount }) {
-    const { allowance } = state.allowanceData.find((item) => item.token === token);
-    const decimals = getters.getDecimalsByAddress(token);
-    const convertAmount = new BigNumber(+amount).shiftedBy(+decimals).toString();
-    if (amount > allowance) {
-      const approveFee = await getFee(
-        'approve', ERC20, token, [spender, convertAmount],
-      );
-      const converApproveFee = Number(shiftedBy(approveFee, 10, 1)).toFixed(2);
-      commit('setApproveFee', converApproveFee);
-    }
-    const transferFee = await getFee(
-      'transfer', ERC20, token, [spender, convertAmount],
-    );
-    const converTransferFee = Number(shiftedBy(transferFee, 10, 1)).toFixed(2);
-    commit('setTransferFee', converTransferFee);
-  },
+
   async approve({ getters }, { token, spender, amount }) {
     const decimals = getters.getDecimalsByAddress(token);
     const convertAmount = new BigNumber(+amount).shiftedBy(+decimals).toString();
-    const fee = await getFee(
-      'approve', ERC20, token, [spender, convertAmount],
-    );
+    const fee = getters.getFee;
     await sendTransaction('approve', ERC20, token, [spender, convertAmount], { maxPriorityFeePerGas: fee, maxFeePerGas: fee });
   },
+
   async transfer({ getters }, { token, recipient, amount }) {
     try {
-      const fee = getters.getTransferFee;
+      const fee = getters.getFee;
       const decimals = getters.getDecimalsByAddress(token);
       const convertAmount = new BigNumber(+amount).shiftedBy(+decimals).toString();
       await sendTransaction('transfer', ERC20, token, [recipient, convertAmount], { maxPriorityFeePerGas: fee, maxFeePerGas: fee });
     } catch (e) {
-      console.log(e);
+      throw error(402, e);
     }
   },
+
   async transactionsHistory({ commit, getters }) {
     try {
       const tokens = getters.getTokenData;
@@ -103,7 +77,7 @@ export default {
         commit('setTransactions', response);
       }));
     } catch (e) {
-      console.log(e);
+      throw error(600, e);
     }
   },
 };

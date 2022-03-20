@@ -36,9 +36,14 @@ export default {
       connectWallet: 'web3/connectWallet',
     }),
     async connectUserWallet() {
-      await this.connectWallet();
-      if (this.isConnected) {
-        this.$router.push('/');
+      try {
+        await this.connectWallet();
+        if (this.isConnected) {
+          this.$router.push('/');
+        }
+      } catch (e) {
+        console.log(e);
+        this.ShowToast(e);
       }
     },
   },

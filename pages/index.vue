@@ -1,9 +1,6 @@
 <template>
   <div class="wallet">
     <div class="wallet__balance">
-      <div class="wallet__balance-usd">
-        ${{ GetBalanceInUsd }} USD
-      </div>
       <div class="wallet__balance-eth">
         {{ GetBalance }} ETH
       </div>
@@ -25,9 +22,6 @@
           <div class="balance__native">
             {{ token.result.balance }} {{ token.result.symbol }}
           </div>
-          <div class="balance__usd">
-            ${{ getTokenBalance(token.result.balance).toFixed(2) }}
-          </div>
         </div>
       </div>
     </div>
@@ -35,29 +29,15 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapGetters } from 'vuex';
 
 export default {
   middleware: 'auth',
   layout: 'auth',
   computed: {
     ...mapGetters({
-      getPrice: 'web3/getPriceInUsd',
       getTokens: 'web3/getTokenData',
     }),
-  },
-  mounted() {
-    this.SetLoader(true);
-    this.priceUSD();
-    this.SetLoader(false);
-  },
-  methods: {
-    ...mapActions({
-      priceUSD: 'web3/getUsdPrice',
-    }),
-    getTokenBalance(token) {
-      return token * this.getPrice;
-    },
   },
 };
 </script>
@@ -73,12 +53,7 @@ export default {
     display: flex;
     align-items: center;
     flex-direction: column;
-    &-usd {
-      font-size: 40px;
-    }
-    &-eth {
-      opacity: 0.8;
-    }
+    font-size: 40px;
   }
   .asset {
     margin: auto;

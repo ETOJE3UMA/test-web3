@@ -7,7 +7,7 @@
       </div>
     </div>
     <base-modal-container />
-    <loader-screen />
+    <!-- <loader-screen /> -->
   </div>
 </template>
 <script>

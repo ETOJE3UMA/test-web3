@@ -1,22 +1,21 @@
 import Web3 from 'web3';
 import BigNumber from 'bignumber.js';
-import Web4 from '@cryptonteam/web4';
 import { output, error } from '~/utils/index';
 import { ERC20 } from './abis';
 
-let web4;
 let web3Wallet;
 let userAddress;
 let chainId;
 let userBalance;
 
+const expectedChainId = 4; // rinkeby
+
 export const fetchContractData = async (method, abi, address, params) => {
   try {
     const Contract = new web3Wallet.eth.Contract(abi, address);
     return await Contract.methods[method].apply(this, params).call();
-  } catch (err) {
-    console.log(err);
-    return false;
+  } catch (e) {
+    throw error(401, e);
   }
 };
 
@@ -31,50 +30,30 @@ export const sendTransaction = async (method, abi, address, params) => {
       from: userAddress,
     });
   } catch (e) {
-    console.log(e);
-    return false;
+    throw error(400, e);
   }
 };
 
-// Send transactions from web4
-export const createInst = async (abi, address) => {
-  const abstracion = web4.getContractAbstraction(abi);
-  return await abstracion.getInstance(address);
+export const changeNetwork = async () => {
+  const { ethereum } = window;
+  if (chainId !== expectedChainId) {
+    await ethereum.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: Web3.utils.toHex(expectedChainId) }],
+    });
+  }
 };
 
 export const connectWallet = async () => {
-  try {
-    const { ethereum } = window; // ethereum - metamask
-    web3Wallet = new Web3(ethereum); // init web3
-    if (await web3Wallet.eth.getCoinbase() === null) { // проверяем подключен ли metamask
-      await ethereum.enable(); // подключить metamask
-    }
-    userAddress = await web3Wallet.eth.getCoinbase(); // получить адрес пользователя
-    chainId = await web3Wallet.eth.net.getId(); // запись сети
-    userBalance = web3Wallet.utils.fromWei(await web3Wallet.eth.getBalance(userAddress)); // баланс пользователя
-    // userBalance = web3Wallet.eth.toDecimal(userBalance);
-    if (+chainId !== 4) {
-      // TODO switch network request
-      return error(500, 'current site work in rinkeby', chainId);
-    }
-    web4 = new Web4();
-    await web4.setProvider(ethereum, userAddress);
-    return output();
-  } catch (err) {
-    console.log(err);
-    return error(500, 'err', err);
+  const { ethereum } = window;
+  web3Wallet = new Web3(ethereum);
+  if (await web3Wallet.eth.getCoinbase() === null) {
+    await ethereum.enable();
   }
-};
-
-export const getFee = async (
-  method, abi, address, params,
-) => {
-  try {
-    return await web3Wallet.eth.getGasPrice();
-  } catch (e) {
-    console.log(e);
-    return '';
-  }
+  userAddress = await web3Wallet.eth.getCoinbase();
+  chainId = await web3Wallet.eth.net.getId();
+  userBalance = web3Wallet.utils.fromWei(await web3Wallet.eth.getBalance(userAddress));
+  await changeNetwork();
 };
 
 export const fetchTransactionHistory = async (token, symbol) => {
@@ -86,6 +65,7 @@ export const fetchTransactionHistory = async (token, symbol) => {
       const spender = item.returnValues?.spender?.toLowerCase() || '';
       const from = item.returnValues?.from?.toLowerCase() || '';
       const to = item.returnValues?.to?.toLowerCase() || '';
+      const { transactionHash } = item;
       if (from.toLowerCase() === userAddress || to.toLowerCase() === userAddress
         || owner.toLowerCase() === userAddress || spender.toLowerCase() === userAddress
       ) {
@@ -95,15 +75,14 @@ export const fetchTransactionHistory = async (token, symbol) => {
           to: item.returnValues.to || item.returnValues.spender,
           amount: item.returnValues.value,
           symbol,
+          transactionHash,
         };
       }
       return null;
     }).filter((item) => item !== null);
-    console.log('requestTransactionHistory: ', filteredResult);
     return filteredResult;
   } catch (e) {
-    console.log('requestTransactionHistory: ', e);
-    return e;
+    throw error(600, e);
   }
 };
 
