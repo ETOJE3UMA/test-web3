@@ -32,7 +32,9 @@
   "toasts": {
     "title": "Error",
     "errors": {
-      "500": "Connection error"
+      "0": "Something went wrong",
+      "500": "Connection error",
+      "4001": "Transaction error"
     }
   }
 }

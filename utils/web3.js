@@ -9,6 +9,7 @@ let chainId;
 let userBalance;
 
 const expectedChainId = 4; // rinkeby
+const { ethereum } = window;
 
 export const fetchContractData = async (method, abi, address, params) => {
   try {
@@ -21,21 +22,16 @@ export const fetchContractData = async (method, abi, address, params) => {
 
 // Send transactions from web3
 export const sendTransaction = async (method, abi, address, params) => {
-  try {
-    const Contract = new web3Wallet.eth.Contract(abi, address);
-    const data = Contract.methods[method].apply(null, params).encodeABI();
-    return web3Wallet.eth.sendTransaction({
-      to: address,
-      data,
-      from: userAddress,
-    });
-  } catch (e) {
-    throw error(400, e);
-  }
+  const Contract = new web3Wallet.eth.Contract(abi, address);
+  const data = Contract.methods[method].apply(null, params).encodeABI();
+  return web3Wallet.eth.sendTransaction({
+    to: address,
+    data,
+    from: userAddress,
+  });
 };
 
 export const changeNetwork = async () => {
-  const { ethereum } = window;
   if (chainId !== expectedChainId) {
     await ethereum.request({
       method: 'wallet_switchEthereumChain',
@@ -45,7 +41,6 @@ export const changeNetwork = async () => {
 };
 
 export const connectWallet = async () => {
-  const { ethereum } = window;
   web3Wallet = new Web3(ethereum);
   if (await web3Wallet.eth.getCoinbase() === null) {
     await ethereum.enable();

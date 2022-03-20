@@ -40,7 +40,7 @@
         <!-- TODO send maximum -->
         <div class="double__input">
           <base-input
-            v-model="amountETH"
+            v-model="amount"
             :placeholder="token.result.symbol || getTokens[0].result.symbol"
             :label="'Amount'"
             :rules="{ required: true, regex: /^[+]?\d+(\.\d+)?$/ }"
@@ -51,27 +51,7 @@
               {{ token.result.symbol || getTokens[0].result.symbol }}
             </template>
           </base-input>
-          <!-- TODO reset when asset change -->
-          <base-input
-            v-model="amountUSD"
-            :placeholder="'USD'"
-            :is-disabled="true"
-          >
-            <template slot="right">
-              USD
-            </template>
-          </base-input>
         </div>
-        <base-input
-          v-model="fee"
-          :label="'Transaction fee'"
-          :placeholder="'Transaction fee'"
-          :is-disabled="true"
-        >
-          <template slot="right">
-            USD
-          </template>
-        </base-input>
         <div class="transfer__buttons">
           <!-- TODO fix cancel -->
           <base-btn
@@ -96,12 +76,11 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
-import { getFee } from '~/utils/web3';
+import { mapGetters } from 'vuex';
 
 export default {
   data: () => ({
-    amountETH: 0,
+    amount: null,
     token: {
       result: {
         symbol: '',
@@ -115,72 +94,30 @@ export default {
     ...mapGetters({
       options: 'modals/getOptions',
       getTokens: 'web3/getTokenData',
-      getApproveFee: 'web3/getApproveFee',
-      getTransferFee: 'web3/getTransferFee',
     }),
     recipient() {
       return this.GetShortAddress(this.options.address);
-    },
-    amountUSD() {
-      return this.GetPriceInUsd(this.amountETH);
-    },
-    fee() {
-      if (this.getApproveFee) {
-        return this.getTransferFee;
-      }
-      return this.getApproveFee + this.getTransferFee;
-    },
-  },
-  watch: {
-    amountETH() {
-      this.fetchFee();
-    },
-    token() {
-      this.fetchFee();
     },
   },
   async mounted() {
     this.SetLoader(true);
     // eslint-disable-next-line prefer-destructuring
     this.token = await this.getTokens[0];
-    await this.fetchAllowance();
-    this.fetchFee();
     this.SetLoader(false);
   },
   methods: {
-    ...mapActions({
-      allowance: 'web3/allowance',
-      approve: 'web3/approve',
-      calcFee: 'web3/calcFee',
-    }),
-    async fetchAllowance() {
-      try {
-        await this.allowance(this.options.address);
-      } catch (e) {
-        console.log(e);
+    nextStep() {
+      // eslint-disable-next-line eqeqeq
+      if (this.amount == 0 || this.amount >= this.token.result.balance) {
+        this.ShowToast('Error');
+      } else {
+        this.ShowModal({
+          key: 'base-modal-transfer-step-three',
+          address: this.options.address,
+          amount: this.amount,
+          token: this.token,
+        });
       }
-    },
-    async fetchFee() {
-      try {
-        const payload = {
-          token: this.getTokens[0].token,
-          spender: this.options.address,
-          amount: this.amountETH,
-        };
-        await this.calcFee(payload);
-      } catch (e) {
-        console.log(e);
-      }
-    },
-    async nextStep() {
-      this.ShowModal({
-        key: 'base-modal-transfer-step-three',
-        address: this.options.address,
-        amountUSD: this.amountUSD,
-        amountETH: this.amountETH,
-        fee: this.fee,
-        token: this.token,
-      });
     },
     previosStep() {
       this.ShowModal({

@@ -9,39 +9,15 @@
           Confirm send to
         </div>
         <div class="recipient__address">
-          {{ options.address }}
-        </div>
-      </div>
-      <div class="info__usd usd">
-        <div class="usd__title">
-          Amount in USD
-        </div>
-        <div class="usd__amount">
-          {{ options.amountUSD }}
+          {{ recipient }}
         </div>
       </div>
       <div class="info__eth eth">
         <div class="eth__title">
-          Amount in ETH
+          Amount {{ options.token.result.symbol }}
         </div>
         <div class="eth__amount">
-          {{ options.amountETH }}
-        </div>
-      </div>
-      <div class="info__fee fee">
-        <div class="fee__title">
-          Gas fee
-        </div>
-        <div class="fee__amount">
-          {{ options.fee }}
-        </div>
-      </div>
-      <div class="info__total total">
-        <div class="total__title">
-          Total
-        </div>
-        <div class="total__amount">
-          {{ total }}
+          {{ options.amount }}
         </div>
       </div>
     </div>
@@ -69,6 +45,11 @@
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
+  data() {
+    return {
+      isTransferInProgress: false,
+    };
+  },
   computed: {
     ...mapGetters({
       options: 'modals/getOptions',
@@ -76,18 +57,29 @@ export default {
     total() {
       return (Number(this.options.amountUSD) + Number(this.options.fee)).toFixed(2);
     },
+    recipient() {
+      return this.GetShortAddress(this.options.address);
+    },
   },
   methods: {
     ...mapActions({
       transfer: 'web3/transfer',
     }),
     async sendTransfer() {
-      const payload = {
-        token: this.options.token.token,
-        recipient: this.options.address,
-        amount: this.options.amountETH,
-      };
-      await this.transfer(payload);
+      try {
+        const payload = {
+          token: this.options.token.token,
+          recipient: this.options.address,
+          amount: this.options.amount,
+        };
+        this.SetLoader(true);
+        await this.transfer(payload);
+        this.SetLoader(false);
+        this.CloseModal();
+      } catch (e) {
+        this.SetLoader(false);
+        this.ShowToast(e);
+      }
     },
   },
 };
@@ -102,7 +94,7 @@ export default {
   .info {
     width: 100%;
   }
-  .recipient, .usd, .eth, .fee, .total {
+  .recipient, .eth {
     padding: 32px;
     border-bottom: 1px solid #E4E3FF;
     display: flex;

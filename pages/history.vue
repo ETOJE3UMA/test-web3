@@ -26,13 +26,20 @@ export default {
   },
   async mounted() {
     this.SetLoader(true);
-    await this.transactions();
+    await this.showHistoryTransation();
     this.SetLoader(false);
   },
   methods: {
     ...mapActions({
       transactions: 'web3/transactionsHistory',
     }),
+    async showHistoryTransation() {
+      try {
+        await this.transactions();
+      } catch (e) {
+        this.ShowToast(e);
+      }
+    },
   },
 };
 </script>

@@ -39,6 +39,9 @@ export default {
       getTokens: 'web3/getTokenData',
     }),
   },
+  mounted() {
+    this.SetLoader(false);
+  },
 };
 </script>
 

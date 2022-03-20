@@ -9,7 +9,6 @@ import {
   fetchTransactionHistory,
 } from '~/utils/web3';
 import { ERC20 } from '~/utils/abis';
-import { error } from '~/utils/index';
 
 export default {
 
@@ -59,25 +58,17 @@ export default {
   },
 
   async transfer({ getters }, { token, recipient, amount }) {
-    try {
-      const fee = getters.getFee;
-      const decimals = getters.getDecimalsByAddress(token);
-      const convertAmount = new BigNumber(+amount).shiftedBy(+decimals).toString();
-      await sendTransaction('transfer', ERC20, token, [recipient, convertAmount], { maxPriorityFeePerGas: fee, maxFeePerGas: fee });
-    } catch (e) {
-      throw error(402, e);
-    }
+    const fee = getters.getFee;
+    const decimals = getters.getDecimalsByAddress(token);
+    const convertAmount = new BigNumber(+amount).shiftedBy(+decimals).toString();
+    await sendTransaction('transfer', ERC20, token, [recipient, convertAmount], { maxPriorityFeePerGas: fee, maxFeePerGas: fee });
   },
 
   async transactionsHistory({ commit, getters }) {
-    try {
-      const tokens = getters.getTokenData;
-      await Promise.all(tokens.map(async (token) => {
-        const response = await fetchTransactionHistory(token.token, token.result.symbol, token.result.decimals);
-        commit('setTransactions', response);
-      }));
-    } catch (e) {
-      throw error(600, e);
-    }
+    const tokens = getters.getTokenData;
+    await Promise.all(tokens.map(async (token) => {
+      const response = await fetchTransactionHistory(token.token, token.result.symbol, token.result.decimals);
+      commit('setTransactions', response);
+    }));
   },
 };
